@@ -1,17 +1,62 @@
-apply plugin: 'java-library'
+import java.nio.file.Paths
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 26
+    
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+String msbuildPath = '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
+String basePath = '../../XamarinDependency'
 
+task compileDebugXamarin(type: Exec) {
+    workingDir basePath
 
-task compileXamarin(type: Exec) {
-    workingDir '../../XamarinDependency'
+    commandLine msbuildPath, '/property:Configuration=Debug'
 
-    commandLine '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
+    inputs.dir(basePath)
+
+    outputs.dirs(Paths.get(basePath, 'XamarinDependency.App/obj/Debug'))
 }
 
-tasks.compileJava.dependsOn compileXamarin
+task compileReleaseXamarin(type: Exec) {
+    workingDir basePath
+
+    commandLine msbuildPath, '/property:Configuration=Release'
+
+    inputs.dir(basePath)
+
+    outputs.dirs(Paths.get(basePath, 'XamarinDependency.App/obj/Release'))
+}
+
+afterEvaluate {
+    tasks.compileDebugJavaWithJavac.dependsOn compileDebugXamarin
+    tasks.compileReleaseJavaWithJavac.dependsOn compileReleaseXamarin
+}
