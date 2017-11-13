@@ -1,0 +1,17 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+
+task compileXamarin(type: Exec) {
+    workingDir '../../XamarinDependency'
+
+    commandLine '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
+}
+
+tasks.compileJava.dependsOn compileXamarin
