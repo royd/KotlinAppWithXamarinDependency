@@ -1,6 +1,10 @@
-import java.nio.file.Paths
+import java.nio.file.Path
 
 apply plugin: 'com.android.library'
+
+String msbuildPath = '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
+Path projectPath = new File('../../XamarinDependency').toPath()
+Path objPath = projectPath.resolve('XamarinDependency.App/obj')
 
 android {
     compileSdkVersion 26
@@ -22,10 +26,26 @@ android {
         }
     }
 
+    sourceSets {
+        debug {
+            java {
+                srcDirs += objPath.resolve('Debug/android/src/xamarindependency').toString()
+                srcDirs += objPath.resolve('Debug/android/src/mono').toString()
+            }
+        }
+        release {
+            java {
+                srcDirs += objPath.resolve('Release/android/src/xamarindependency').toString()
+                srcDirs += objPath.resolve('Release/android/src/mono').toString()
+            }
+        }
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    debugImplementation files(objPath.resolve('Debug/android/bin/mono.android.jar'))
+    releaseImplementation files(objPath.resolve('Release/android/bin/mono.android.jar'))
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
@@ -33,27 +53,24 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
-String msbuildPath = '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
-String basePath = '../../XamarinDependency'
-
 task compileDebugXamarin(type: Exec) {
-    workingDir basePath
+    workingDir projectPath
 
     commandLine msbuildPath, '/property:Configuration=Debug'
 
-    inputs.dir(basePath)
+    inputs.dir(projectPath)
 
-    outputs.dirs(Paths.get(basePath, 'XamarinDependency.App/obj/Debug'))
+    outputs.dirs(objPath.resolve('Debug'))
 }
 
 task compileReleaseXamarin(type: Exec) {
-    workingDir basePath
+    workingDir projectPath
 
     commandLine msbuildPath, '/property:Configuration=Release'
 
-    inputs.dir(basePath)
+    inputs.dir(projectPath)
 
-    outputs.dirs(Paths.get(basePath, 'XamarinDependency.App/obj/Release'))
+    outputs.dirs(objPath.resolve('Release'))
 }
 
 afterEvaluate {
