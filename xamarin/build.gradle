@@ -5,6 +5,7 @@ apply plugin: 'com.android.library'
 String msbuildPath = '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
 Path projectPath = new File('../../XamarinDependency').toPath()
 Path objPath = projectPath.resolve('XamarinDependency.App/obj')
+Path binPath = projectPath.resolve('XamarinDependency.App/bin')
 
 android {
     compileSdkVersion 26
@@ -32,12 +33,16 @@ android {
                 srcDirs += objPath.resolve('Debug/android/src/xamarindependency').toString()
                 srcDirs += objPath.resolve('Debug/android/src/mono').toString()
             }
+
+            resources.srcDirs binPath.resolve('Debug/unpacked')
         }
         release {
             java {
                 srcDirs += objPath.resolve('Release/android/src/xamarindependency').toString()
                 srcDirs += objPath.resolve('Release/android/src/mono').toString()
             }
+
+            resources.srcDirs binPath.resolve('Release/unpacked')
         }
     }
 }
@@ -73,7 +78,31 @@ task compileReleaseXamarin(type: Exec) {
     outputs.dirs(objPath.resolve('Release'))
 }
 
+task unpackDebugXamarin(type: UnpackXamarinApk) {
+    apk file(binPath.resolve('Debug/com.roydammarell.XamarinDependency-Signed.apk'))
+
+    dependsOn compileDebugXamarin
+}
+
+task unpackReleaseXamarin(type: UnpackXamarinApk) {
+    apk file(binPath.resolve('Release/com.roydammarell.XamarinDependency-Signed.apk'))
+
+    dependsOn compileReleaseXamarin
+}
+
+class UnpackXamarinApk extends Copy {
+    def apk(File file) {
+        File directory = file.parentFile
+        Path outputDir = directory.toPath().resolve('unpacked')
+
+        from project.zipTree(file).matching {
+            include(['lib/**', 'typemap.**', 'environment', 'NOTICE'])
+        }
+        into outputDir
+    }
+}
+
 afterEvaluate {
-    tasks.compileDebugJavaWithJavac.dependsOn compileDebugXamarin
-    tasks.compileReleaseJavaWithJavac.dependsOn compileReleaseXamarin
+    tasks.compileDebugJavaWithJavac.dependsOn unpackDebugXamarin
+    tasks.compileReleaseJavaWithJavac.dependsOn unpackReleaseXamarin
 }
