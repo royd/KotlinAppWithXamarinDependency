@@ -4,7 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 Path projectPath = new File('../../XamarinDependency').toPath()
-Path objPath = projectPath.resolve('XamarinDependency.App/obj')
+Path objPath = projectPath.resolve('XamarinDependency.Application/obj')
 
 android {
     compileSdkVersion 26

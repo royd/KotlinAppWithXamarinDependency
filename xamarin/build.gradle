@@ -4,8 +4,8 @@ apply plugin: 'com.android.library'
 
 String msbuildPath = '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
 Path projectPath = new File('../../XamarinDependency').toPath()
-Path objPath = projectPath.resolve('XamarinDependency.App/obj')
-Path binPath = projectPath.resolve('XamarinDependency.App/bin')
+Path objPath = projectPath.resolve('XamarinDependency.Application/obj')
+Path binPath = projectPath.resolve('XamarinDependency.Application/bin')
 
 android {
     compileSdkVersion 26
