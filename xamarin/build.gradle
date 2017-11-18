@@ -4,8 +4,8 @@ apply plugin: 'com.android.library'
 
 String msbuildPath = '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
 Path projectPath = new File('../../XamarinDependency').toPath()
-Path objPath = projectPath.resolve('XamarinDependency.Application/obj')
-Path binPath = projectPath.resolve('XamarinDependency.Application/bin')
+Path appPath = projectPath.resolve('XamarinDependency.Application')
+Path objPath = appPath.resolve('obj')
 
 android {
     compileSdkVersion 26
@@ -34,7 +34,7 @@ android {
                 srcDirs += objPath.resolve('Debug/android/src/mono').toString()
             }
 
-            resources.srcDirs binPath.resolve('Debug/unpacked')
+            resources.srcDirs objPath.resolve('Debug/android/bin/unpacked')
         }
         release {
             java {
@@ -42,7 +42,7 @@ android {
                 srcDirs += objPath.resolve('Release/android/src/mono').toString()
             }
 
-            resources.srcDirs binPath.resolve('Release/unpacked')
+            resources.srcDirs objPath.resolve('Release/android/bin/unpacked')
         }
     }
 }
@@ -59,9 +59,11 @@ dependencies {
 }
 
 task compileDebugXamarin(type: Exec) {
-    workingDir projectPath
+    workingDir appPath
 
-    commandLine msbuildPath, '/property:Configuration=Debug'
+    executable msbuildPath
+
+    args '/target:BuildApk', '/property:Configuration=Debug', '/property:Platform=AnyCPU'
 
     inputs.dir(projectPath)
 
@@ -69,9 +71,11 @@ task compileDebugXamarin(type: Exec) {
 }
 
 task compileReleaseXamarin(type: Exec) {
-    workingDir projectPath
+    workingDir appPath
 
-    commandLine msbuildPath, '/property:Configuration=Release'
+    executable msbuildPath
+
+    args '/target:BuildApk', '/property:Configuration=Release', '/property:Platform=AnyCPU'
 
     inputs.dir(projectPath)
 
@@ -79,13 +83,13 @@ task compileReleaseXamarin(type: Exec) {
 }
 
 task unpackDebugXamarin(type: UnpackXamarinApk) {
-    apk file(binPath.resolve('Debug/com.roydammarell.XamarinDependency-Signed.apk'))
+    apk file(objPath.resolve('Debug/android/bin/com.roydammarell.XamarinDependency.apk'))
 
     dependsOn compileDebugXamarin
 }
 
 task unpackReleaseXamarin(type: UnpackXamarinApk) {
-    apk file(binPath.resolve('Release/com.roydammarell.XamarinDependency-Signed.apk'))
+    apk file(objPath.resolve('Release/android/bin/com.roydammarell.XamarinDependency.apk'))
 
     dependsOn compileReleaseXamarin
 }
@@ -96,13 +100,13 @@ class UnpackXamarinApk extends Copy {
         Path outputDir = directory.toPath().resolve('unpacked')
 
         from project.zipTree(file).matching {
-            include(['lib/**', 'typemap.**', 'environment', 'NOTICE'])
+            include(['assemblies/**' ,'lib/**', 'typemap.**', 'environment', 'NOTICE'])
         }
         into outputDir
     }
 }
 
 afterEvaluate {
-    tasks.compileDebugJavaWithJavac.dependsOn unpackDebugXamarin
-    tasks.compileReleaseJavaWithJavac.dependsOn unpackReleaseXamarin
+    tasks.generateDebugSources.dependsOn unpackDebugXamarin
+    tasks.generateReleaseSources.dependsOn unpackReleaseXamarin
 }
