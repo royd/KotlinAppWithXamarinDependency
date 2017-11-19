@@ -109,4 +109,11 @@ class UnpackXamarinApk extends Copy {
 afterEvaluate {
     tasks.generateDebugSources.dependsOn unpackDebugXamarin
     tasks.generateReleaseSources.dependsOn unpackReleaseXamarin
+    tasks.compileDebugKotlin.dependsOn unpackDebugXamarin
+    tasks.compileReleaseKotlin.dependsOn unpackReleaseXamarin
+    tasks.compileDebugJavaWithJavac.dependsOn unpackDebugXamarin
+    tasks.compileReleaseJavaWithJavac.dependsOn unpackReleaseXamarin
+}
+repositories {
+    mavenCentral()
 }
