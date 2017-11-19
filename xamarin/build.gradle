@@ -58,6 +58,18 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
+task cleanXamarin(type: Exec) {
+    workingDir appPath
+
+    executable msbuildPath
+
+    args '/target:clean'
+
+    inputs.dir(projectPath)
+
+    outputs.dirs(objPath.resolve('Debug'))
+}
+
 task compileDebugXamarin(type: Exec) {
     workingDir appPath
 
@@ -107,6 +119,8 @@ class UnpackXamarinApk extends Copy {
 }
 
 afterEvaluate {
+    tasks.clean.dependsOn cleanXamarin
+
     tasks.generateDebugSources.dependsOn unpackDebugXamarin
     tasks.generateReleaseSources.dependsOn unpackReleaseXamarin
     tasks.compileDebugKotlin.dependsOn unpackDebugXamarin
