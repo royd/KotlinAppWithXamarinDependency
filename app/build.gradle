@@ -3,6 +3,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('../../../../.android/debug.keystore')
+            storePassword 'android'
+        }
+    }
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.roydammarell.kotlinappwithxamarindependency"
@@ -16,6 +24,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     aaptOptions {
