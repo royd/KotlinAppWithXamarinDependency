@@ -30,16 +30,14 @@ android {
     sourceSets {
         debug {
             java {
-                srcDirs += objPath.resolve('Debug/android/src/xamarindependency').toString()
-                srcDirs += objPath.resolve('Debug/android/src/mono').toString()
+                srcDirs += objPath.resolve('Debug/android/src').toString()
             }
 
             resources.srcDirs objPath.resolve('Debug/android/bin/unpacked')
         }
         release {
             java {
-                srcDirs += objPath.resolve('Release/android/src/xamarindependency').toString()
-                srcDirs += objPath.resolve('Release/android/src/mono').toString()
+                srcDirs += objPath.resolve('Release/android/src').toString()
             }
 
             resources.srcDirs objPath.resolve('Release/android/bin/unpacked')
