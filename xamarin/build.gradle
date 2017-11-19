@@ -1,6 +1,7 @@
 import java.nio.file.Path
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 String msbuildPath = '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
 Path projectPath = new File('../../XamarinDependency').toPath()
@@ -54,6 +55,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
 task compileDebugXamarin(type: Exec) {

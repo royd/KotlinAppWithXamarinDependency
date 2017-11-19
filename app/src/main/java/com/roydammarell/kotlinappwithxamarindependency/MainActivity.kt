@@ -3,7 +3,7 @@ package com.roydammarell.kotlinappwithxamarindependency
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
-import com.roydammarell.library.HelloService
+import com.roydammarell.xamarin.HelloService
 
 class MainActivity : AppCompatActivity() {
 

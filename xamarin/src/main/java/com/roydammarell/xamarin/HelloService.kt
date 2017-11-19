@@ -1,6 +1,6 @@
-package com.roydammarell.library
+package com.roydammarell.xamarin
 
-import xamarindependency.library.*
+import com.roydammarell.xamarindependency.HelloXamarinService
 
 class HelloService {
     fun createHello(): String {
