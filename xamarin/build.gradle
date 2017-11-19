@@ -10,7 +10,6 @@ Path objPath = appPath.resolve('obj')
 
 android {
     compileSdkVersion 26
-    
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 26
@@ -20,27 +19,19 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     sourceSets {
         debug {
-            java {
-                srcDirs += objPath.resolve('Debug/android/src').toString()
-            }
-
+            java.srcDirs objPath.resolve('Debug/android/src')
             resources.srcDirs objPath.resolve('Debug/android/bin/unpacked')
         }
         release {
-            java {
-                srcDirs += objPath.resolve('Release/android/src').toString()
-            }
-
+            java.srcDirs objPath.resolve('Release/android/src')
             resources.srcDirs objPath.resolve('Release/android/bin/unpacked')
         }
     }
@@ -48,6 +39,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     debugImplementation files(objPath.resolve('Debug/android/bin/mono.android.jar'))
     releaseImplementation files(objPath.resolve('Release/android/bin/mono.android.jar'))
 
@@ -123,11 +115,14 @@ afterEvaluate {
 
     tasks.generateDebugSources.dependsOn unpackDebugXamarin
     tasks.generateReleaseSources.dependsOn unpackReleaseXamarin
+
     tasks.compileDebugKotlin.dependsOn unpackDebugXamarin
     tasks.compileReleaseKotlin.dependsOn unpackReleaseXamarin
+
     tasks.compileDebugJavaWithJavac.dependsOn unpackDebugXamarin
     tasks.compileReleaseJavaWithJavac.dependsOn unpackReleaseXamarin
 }
+
 repositories {
     mavenCentral()
 }
