@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
 import com.roydammarell.xamarin.HelloService
+import com.roydammarell.xamarin.ExceptionService
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,7 +15,12 @@ class MainActivity : AppCompatActivity() {
 
         val helloView = findViewById<TextView>(R.id.helloView)
         helloView.text = helloService.createHello()
+
+        throwButton.setOnClickListener {
+            exceptionService.throwNullReferenceException()
+        }
     }
 
     private val helloService = HelloService()
+    private val exceptionService = ExceptionService()
 }
