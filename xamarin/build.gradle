@@ -27,11 +27,17 @@ android {
     }
     sourceSets {
         debug {
-            java.srcDirs objPath.resolve('Debug/android/src')
+            java {
+                srcDirs objPath.resolve('Debug/android/src')
+                exclude 'android/**'
+            }
             resources.srcDirs objPath.resolve('Debug/android/bin/unpacked')
         }
         release {
-            java.srcDirs objPath.resolve('Release/android/src')
+            java {
+                srcDirs objPath.resolve('Release/android/src')
+                exclude 'android/**'
+            }
             resources.srcDirs objPath.resolve('Release/android/bin/unpacked')
         }
     }
@@ -43,11 +49,52 @@ dependencies {
     debugImplementation files(objPath.resolve('Debug/android/bin/mono.android.jar'))
     releaseImplementation files(objPath.resolve('Release/android/bin/mono.android.jar'))
 
+    api project(':xamarininterface')
+
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+}
+
+task copyDebugBindingsJar(type: Copy) {
+    from '../xamarininterface/build/intermediates/intermediate-jars/debug'
+    into projectPath.resolve('XamarinDependency.LibraryBindings/Jars')
+    include 'classes.jar'
+}
+
+task copyReleaseBindingsJar(type: Copy) {
+    from '../xamarininterface/build/intermediates/intermediate-jars/release'
+    into projectPath.resolve('XamarinDependency.LibraryBindings/Jars')
+    include 'classes.jar'
+}
+
+task cleanBindingsJar(type: Delete) {
+    delete projectPath.resolve('XamarinDependency.LibraryBindings/Jars/classes.jar')
+}
+
+// Workaround for /Library/Frameworks/Xamarin.Android.framework/Versions/Current/bin/generator: line 6: exec: mono: not found
+// Executing project Build target explicitly
+// Alternative to mono symlink: https://forums.xamarin.com/discussion/51427/tool-exited-with-code-127-mono-not-found
+task buildDebugXamarinBindings(type: Exec) {
+    workingDir projectPath.resolve('XamarinDependency.LibraryBindings')
+
+    executable msbuildPath
+
+    args '/target:Build', '/property:Configuration=Debug', '/property:Platform=AnyCPU'
+
+    dependsOn copyDebugBindingsJar
+}
+
+task buildReleaseXamarinBindings(type: Exec) {
+    workingDir projectPath.resolve('XamarinDependency.LibraryBindings')
+
+    executable msbuildPath
+
+    args '/target:Build', '/property:Configuration=Release', '/property:Platform=AnyCPU'
+
+    dependsOn copyReleaseBindingsJar
 }
 
 task cleanXamarin(type: Exec) {
@@ -60,6 +107,8 @@ task cleanXamarin(type: Exec) {
     inputs.dir(projectPath)
 
     outputs.dirs(objPath.resolve('Debug'))
+
+    dependsOn cleanBindingsJar
 }
 
 task compileDebugXamarin(type: Exec) {
@@ -72,6 +121,8 @@ task compileDebugXamarin(type: Exec) {
     inputs.dir(projectPath)
 
     outputs.dirs(objPath.resolve('Debug'))
+
+    dependsOn buildDebugXamarinBindings
 }
 
 task compileReleaseXamarin(type: Exec) {
@@ -84,6 +135,8 @@ task compileReleaseXamarin(type: Exec) {
     inputs.dir(projectPath)
 
     outputs.dirs(objPath.resolve('Release'))
+
+    dependsOn buildReleaseXamarinBindings
 }
 
 task unpackDebugXamarin(type: UnpackXamarinApk) {
@@ -112,9 +165,6 @@ class UnpackXamarinApk extends Copy {
 
 afterEvaluate {
     tasks.clean.dependsOn cleanXamarin
-
-    tasks.generateDebugSources.dependsOn unpackDebugXamarin
-    tasks.generateReleaseSources.dependsOn unpackReleaseXamarin
 
     tasks.compileDebugKotlin.dependsOn unpackDebugXamarin
     tasks.compileReleaseKotlin.dependsOn unpackReleaseXamarin
