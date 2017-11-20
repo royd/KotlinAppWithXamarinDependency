@@ -4,7 +4,7 @@ import com.roydammarell.xamarindependency.HelloXamarinService
 
 class HelloService {
     fun createHello(): String {
-        return helloXamarinService.CreateHelloXamarin()
+        return helloXamarinService.createHelloXamarin()
     }
 
     private val helloXamarinService = HelloXamarinService()
