@@ -58,16 +58,20 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
-task copyDebugBindingsJar(type: Copy) {
-    from '../xamarininterface/build/intermediates/intermediate-jars/debug'
-    into projectPath.resolve('XamarinDependency.LibraryBindings/Jars')
-    include 'classes.jar'
+task copyDebugBindingsJar(type: Jar) {
+    from '../xamarininterface/build/tmp/kotlin-classes/debug', '../xamarininterface/build/intermediates/classes/debug'
+    archiveName "classes.jar"
+    destinationDir file(projectPath.resolve('XamarinDependency.LibraryBindings/Jars'))
+    dependsOn tasks.getByPath(":xamarininterface:compileDebugSources")
+    exclude 'android/**'
 }
 
-task copyReleaseBindingsJar(type: Copy) {
-    from '../xamarininterface/build/intermediates/intermediate-jars/release'
-    into projectPath.resolve('XamarinDependency.LibraryBindings/Jars')
-    include 'classes.jar'
+task copyReleaseBindingsJar(type: Jar) {
+    from '../xamarininterface/build/tmp/kotlin-classes/release', '../xamarininterface/build/intermediates/classes/release'
+    archiveName "classes.jar"
+    destinationDir file(projectPath.resolve('XamarinDependency.LibraryBindings/Jars'))
+    dependsOn tasks.getByPath(":xamarininterface:compileReleaseSources")
+    exclude 'android/**'
 }
 
 task cleanBindingsJar(type: Delete) {
