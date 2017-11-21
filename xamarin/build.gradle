@@ -171,6 +171,9 @@ afterEvaluate {
 
     tasks.compileDebugJavaWithJavac.dependsOn unpackDebugXamarin
     tasks.compileReleaseJavaWithJavac.dependsOn unpackReleaseXamarin
+
+    tasks.generateDebugSources.dependsOn compileDebugXamarin
+    tasks.generateReleaseSources.dependsOn compileReleaseXamarin
 }
 
 repositories {
