@@ -3,11 +3,18 @@ import java.nio.file.Path
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-String msbuildPath = '/Library/Frameworks/Mono.framework/Versions/Current/Commands/msbuild'
+Path frameworksPath = new File('/Library/Frameworks').toPath()
+Path monoFrameworkPath = frameworksPath.resolve('Mono.framework/Versions/Current')
+Path msbuildPath = monoFrameworkPath.resolve('Commands/msbuild')
+Path xamarinAndroidPath = frameworksPath.resolve('Xamarin.Android.framework/Versions/Current')
 Path projectPath = new File('../../XamarinDependency').toPath()
 Path appPath = projectPath.resolve('XamarinDependency.Application')
 Path objPath = appPath.resolve('obj')
+
 String envPath = [System.getenv('PATH'), '/Library/Frameworks/Mono.framework/Versions/Current/Commands'].join(':')
+String xamarinTargetFrameworkVersion = 'v8.0' // Corresponds to compileSdkVersion
+Path monoAndroidPath = xamarinAndroidPath.resolve("lib/xbuild-frameworks/MonoAndroid/$xamarinTargetFrameworkVersion/mono.android.jar")
+
 
 android {
     compileSdkVersion 26
@@ -47,8 +54,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    debugImplementation files(objPath.resolve('Debug/android/bin/mono.android.jar'))
-    releaseImplementation files(objPath.resolve('Release/android/bin/mono.android.jar'))
+    debugImplementation files(monoAndroidPath)
+    releaseImplementation files(monoAndroidPath)
+    androidTestImplementation files(monoAndroidPath)
 
     api project(':xamarininterface')
 
@@ -84,7 +92,7 @@ task buildDebugXamarinBindings(type: Exec) {
 
     executable msbuildPath
 
-    args '/target:Build', '/property:Configuration=Debug', '/property:Platform=AnyCPU'
+    args '/target:Build', '/property:Configuration=Debug', '/property:Platform=AnyCPU', "/property:TargetFrameworkVersion=$xamarinTargetFrameworkVersion"
 
     // Workaround for /Library/Frameworks/Xamarin.Android.framework/Versions/Current/bin/generator: line 6: exec: mono: not found
     environment('PATH', envPath)
@@ -97,7 +105,7 @@ task buildReleaseXamarinBindings(type: Exec) {
 
     executable msbuildPath
 
-    args '/target:Build', '/property:Configuration=Release', '/property:Platform=AnyCPU'
+    args '/target:Build', '/property:Configuration=Release', '/property:Platform=AnyCPU', "/property:TargetFrameworkVersion=$xamarinTargetFrameworkVersion"
 
     environment('PATH', envPath)
 
@@ -123,7 +131,7 @@ task compileDebugXamarin(type: Exec) {
 
     executable msbuildPath
 
-    args '/target:BuildApk', '/property:Configuration=Debug', '/property:Platform=AnyCPU'
+    args '/target:BuildApk', '/property:Configuration=Debug', '/property:Platform=AnyCPU', "/property:TargetFrameworkVersion=$xamarinTargetFrameworkVersion"
 
     inputs.dir(projectPath)
 
@@ -137,7 +145,7 @@ task compileReleaseXamarin(type: Exec) {
 
     executable msbuildPath
 
-    args '/target:BuildApk', '/property:Configuration=Release', '/property:Platform=AnyCPU'
+    args '/target:BuildApk', '/property:Configuration=Release', '/property:Platform=AnyCPU', "/property:TargetFrameworkVersion=$xamarinTargetFrameworkVersion"
 
     inputs.dir(projectPath)
 
