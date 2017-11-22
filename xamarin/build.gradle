@@ -87,31 +87,6 @@ task cleanBindingsJar(type: Delete) {
     delete projectPath.resolve('XamarinDependency.LibraryBindings/Jars/classes.jar')
 }
 
-task buildDebugXamarinBindings(type: Exec) {
-    workingDir projectPath.resolve('XamarinDependency.LibraryBindings')
-
-    executable msbuildPath
-
-    args '/target:Build', '/property:Configuration=Debug', '/property:Platform=AnyCPU', "/property:TargetFrameworkVersion=$xamarinTargetFrameworkVersion"
-
-    // Workaround for /Library/Frameworks/Xamarin.Android.framework/Versions/Current/bin/generator: line 6: exec: mono: not found
-    environment('PATH', envPath)
-
-    dependsOn copyDebugBindingsJar
-}
-
-task buildReleaseXamarinBindings(type: Exec) {
-    workingDir projectPath.resolve('XamarinDependency.LibraryBindings')
-
-    executable msbuildPath
-
-    args '/target:Build', '/property:Configuration=Release', '/property:Platform=AnyCPU', "/property:TargetFrameworkVersion=$xamarinTargetFrameworkVersion"
-
-    environment('PATH', envPath)
-
-    dependsOn copyReleaseBindingsJar
-}
-
 task cleanXamarin(type: Exec) {
     workingDir appPath
 
@@ -137,7 +112,9 @@ task compileDebugXamarin(type: Exec) {
 
     outputs.dirs(objPath.resolve('Debug'))
 
-    dependsOn buildDebugXamarinBindings
+    environment('PATH', envPath) // Workaround for /Library/Frameworks/Xamarin.Android.framework/Versions/Current/bin/generator: line 6: exec: mono: not found
+
+    dependsOn copyDebugBindingsJar
 }
 
 task compileReleaseXamarin(type: Exec) {
@@ -151,7 +128,9 @@ task compileReleaseXamarin(type: Exec) {
 
     outputs.dirs(objPath.resolve('Release'))
 
-    dependsOn buildReleaseXamarinBindings
+    environment('PATH', envPath)
+
+    dependsOn copyReleaseBindingsJar
 }
 
 task unpackDebugXamarin(type: UnpackXamarinApk) {
