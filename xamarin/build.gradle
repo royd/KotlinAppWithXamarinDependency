@@ -13,7 +13,7 @@ Path projectPath = new File('../../XamarinDependency').toPath()
 Path appPath = projectPath.resolve('XamarinDependency.Application')
 Path objPath = appPath.resolve('obj')
 
-String envPath = [System.getenv('PATH'), '/Library/Frameworks/Mono.framework/Versions/Current/Commands'].join(':')
+String envPath = [System.getenv('PATH'), monoFrameworkPath.resolve('Commands').toString()].join(':')
 Path monoAndroidPath = xamarinAndroidPath.resolve("lib/xbuild-frameworks/MonoAndroid/$xamarinTargetFrameworkVersion/mono.android.jar")
 
 
