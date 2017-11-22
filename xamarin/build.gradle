@@ -7,6 +7,7 @@ String msbuildPath = '/Library/Frameworks/Mono.framework/Versions/Current/Comman
 Path projectPath = new File('../../XamarinDependency').toPath()
 Path appPath = projectPath.resolve('XamarinDependency.Application')
 Path objPath = appPath.resolve('obj')
+String envPath = [System.getenv('PATH'), '/Library/Frameworks/Mono.framework/Versions/Current/Commands'].join(':')
 
 android {
     compileSdkVersion 26
@@ -78,15 +79,15 @@ task cleanBindingsJar(type: Delete) {
     delete projectPath.resolve('XamarinDependency.LibraryBindings/Jars/classes.jar')
 }
 
-// Workaround for /Library/Frameworks/Xamarin.Android.framework/Versions/Current/bin/generator: line 6: exec: mono: not found
-// Executing project Build target explicitly
-// Alternative to mono symlink: https://forums.xamarin.com/discussion/51427/tool-exited-with-code-127-mono-not-found
 task buildDebugXamarinBindings(type: Exec) {
     workingDir projectPath.resolve('XamarinDependency.LibraryBindings')
 
     executable msbuildPath
 
     args '/target:Build', '/property:Configuration=Debug', '/property:Platform=AnyCPU'
+
+    // Workaround for /Library/Frameworks/Xamarin.Android.framework/Versions/Current/bin/generator: line 6: exec: mono: not found
+    environment('PATH', envPath)
 
     dependsOn copyDebugBindingsJar
 }
@@ -97,6 +98,8 @@ task buildReleaseXamarinBindings(type: Exec) {
     executable msbuildPath
 
     args '/target:Build', '/property:Configuration=Release', '/property:Platform=AnyCPU'
+
+    environment('PATH', envPath)
 
     dependsOn copyReleaseBindingsJar
 }
