@@ -3,6 +3,8 @@ import java.nio.file.Path
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
+String xamarinTargetFrameworkVersion = 'v8.0' // Corresponds to compileSdkVersion
+
 Path frameworksPath = new File('/Library/Frameworks').toPath()
 Path monoFrameworkPath = frameworksPath.resolve('Mono.framework/Versions/Current')
 Path msbuildPath = monoFrameworkPath.resolve('Commands/msbuild')
@@ -12,7 +14,6 @@ Path appPath = projectPath.resolve('XamarinDependency.Application')
 Path objPath = appPath.resolve('obj')
 
 String envPath = [System.getenv('PATH'), '/Library/Frameworks/Mono.framework/Versions/Current/Commands'].join(':')
-String xamarinTargetFrameworkVersion = 'v8.0' // Corresponds to compileSdkVersion
 Path monoAndroidPath = xamarinAndroidPath.resolve("lib/xbuild-frameworks/MonoAndroid/$xamarinTargetFrameworkVersion/mono.android.jar")
 
 
@@ -89,59 +90,40 @@ task cleanBindingsJar(type: Delete) {
 
 task cleanXamarin(type: Exec) {
     workingDir appPath
-
     executable msbuildPath
-
     args '/target:clean'
-
     inputs.dir(projectPath)
-
     outputs.dirs(objPath.resolve('Debug'))
-
     dependsOn cleanBindingsJar
 }
 
 task compileDebugXamarin(type: Exec) {
     workingDir appPath
-
     executable msbuildPath
-
     args '/target:BuildApk', '/property:Configuration=Debug', '/property:Platform=AnyCPU', "/property:TargetFrameworkVersion=$xamarinTargetFrameworkVersion"
-
     inputs.dir(projectPath)
-
     outputs.dirs(objPath.resolve('Debug'))
-
     environment('PATH', envPath) // Workaround for /Library/Frameworks/Xamarin.Android.framework/Versions/Current/bin/generator: line 6: exec: mono: not found
-
     dependsOn copyDebugBindingsJar
 }
 
 task compileReleaseXamarin(type: Exec) {
     workingDir appPath
-
     executable msbuildPath
-
     args '/target:BuildApk', '/property:Configuration=Release', '/property:Platform=AnyCPU', "/property:TargetFrameworkVersion=$xamarinTargetFrameworkVersion"
-
     inputs.dir(projectPath)
-
     outputs.dirs(objPath.resolve('Release'))
-
     environment('PATH', envPath)
-
     dependsOn copyReleaseBindingsJar
 }
 
 task unpackDebugXamarin(type: UnpackXamarinApk) {
     apk file(objPath.resolve('Debug/android/bin/com.roydammarell.XamarinDependency.apk'))
-
     dependsOn compileDebugXamarin
 }
 
 task unpackReleaseXamarin(type: UnpackXamarinApk) {
     apk file(objPath.resolve('Release/android/bin/com.roydammarell.XamarinDependency.apk'))
-
     dependsOn compileReleaseXamarin
 }
 
