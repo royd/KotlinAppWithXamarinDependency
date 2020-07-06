@@ -15,6 +15,7 @@ Path objPath = appPath.resolve('obj')
 
 String envPath = [System.getenv('PATH'), monoFrameworkPath.resolve('Commands').toString()].join(':')
 Path monoAndroidPath = xamarinAndroidPath.resolve("lib/xbuild-frameworks/MonoAndroid/$xamarinTargetFrameworkVersion/mono.android.jar")
+Path javaRuntimePath = xamarinAndroidPath.resolve("lib/xbuild/Xamarin/Android/java_runtime.jar")
 
 
 android {
@@ -58,6 +59,10 @@ dependencies {
     debugImplementation files(monoAndroidPath)
     releaseImplementation files(monoAndroidPath)
     androidTestImplementation files(monoAndroidPath)
+
+    debugImplementation files(javaRuntimePath)
+    releaseImplementation files(javaRuntimePath)
+    androidTestImplementation files(javaRuntimePath)
 
     api project(':xamarininterface')
 
