@@ -1,6 +1,6 @@
 package com.roydammarell.kotlinappwithxamarindependency
 
-import android.support.v7.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
 import android.widget.TextView
 import com.roydammarell.xamarin.ServiceFactory
@@ -8,7 +8,7 @@ import com.roydammarell.xamarininterface.IExceptionService
 import com.roydammarell.xamarininterface.IHelloService
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
