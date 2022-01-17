@@ -2,11 +2,11 @@ package com.roydammarell.kotlinappwithxamarindependency
 
 import android.app.Activity
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import com.roydammarell.xamarin.ServiceFactory
 import com.roydammarell.xamarininterface.IExceptionService
 import com.roydammarell.xamarininterface.IHelloService
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : Activity() {
 
@@ -17,7 +17,7 @@ class MainActivity : Activity() {
         val helloView = findViewById<TextView>(R.id.helloView)
         helloView.text = helloService.createHello()
 
-        throwButton.setOnClickListener {
+        findViewById<Button>(R.id.throwButton).setOnClickListener {
             exceptionService.throwNullReferenceException()
         }
     }
