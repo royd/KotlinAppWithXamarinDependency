@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.roydammarell.xamarin">
 
-    <application>
+    <application
+        android:extractNativeLibs="false">
         <provider
             android:name="mono.MonoRuntimeProvider"
             android:exported="false"
@@ -9,7 +10,8 @@
             android:initOrder="2147483647" />
 
         <receiver
-            android:name="mono.android.Seppuku">
+            android:name="mono.android.Seppuku"
+            android:exported="false">
 
             <intent-filter>
 
