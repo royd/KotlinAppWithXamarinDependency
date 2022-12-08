@@ -148,6 +148,9 @@ class UnpackXamarinApk extends Copy {
 afterEvaluate {
     tasks.clean.dependsOn cleanXamarin
 
+    tasks.mergeDebugJniLibFolders.dependsOn unpackDebugXamarin
+    tasks.mergeReleaseJniLibFolders.dependsOn unpackReleaseXamarin
+
     tasks.compileDebugKotlin.dependsOn unpackDebugXamarin
     tasks.compileReleaseKotlin.dependsOn unpackReleaseXamarin
 
